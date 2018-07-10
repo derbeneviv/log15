@@ -91,6 +91,7 @@ type Logger interface {
 
 	// Log a message at the given level with context key/value pairs
 	Debug(msg string, ctx ...interface{})
+	Debugf(format string, args ...interface{})
 	Info(msg string, ctx ...interface{})
 	Warn(msg string, ctx ...interface{})
 	Error(msg string, ctx ...interface{})
