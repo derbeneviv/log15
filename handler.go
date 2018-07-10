@@ -174,20 +174,14 @@ func MatchFilterHandler(key string, value interface{}, h Handler) Handler {
 		return false
 	}, h)
 }
-
-// LvlFilterHandler returns a Handler that only writes
-// records which are less than the given verbosity
-// level to the wrapped Handler. For example, to only
-// log Error/Crit records:
-//
-//     log.LvlFilterHandler(log.LvlError, log.StdoutHandler)
-//
+// LvlFilter deprecated now due to logger.SetLevel() function
+/*
 func LvlFilterHandler(maxLvl Lvl, h Handler) Handler {
 	return FilterHandler(func(r *Record) (pass bool) {
 		return r.Lvl <= maxLvl
 	}, h)
 }
-
+*/
 // MultiHandler dispatches any write to each of its handlers.
 // This is useful for writing different types of log information
 // to different locations. For example, to log to a file and

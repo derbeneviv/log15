@@ -24,14 +24,25 @@ func init() {
 		StderrHandler = StreamHandler(colorable.NewColorableStderr(), TerminalFormat())
 	}
 
-	root = &logger{[]interface{}{}, new(swapHandler)}
+	root = &logger{LvlDebug,[]interface{}{}, new(swapHandler)}
 	root.SetHandler(StdoutHandler)
 }
 
 // New returns a new logger with the given context.
 // New is a convenient alias for Root().New
 func New(ctx ...interface{}) Logger {
-	return root.New(ctx...)
+	return root.New(root.maxLvl, ctx...)
+}
+
+func NewWithLvl(maxLvl Lvl, ctx ...interface{}) Logger {
+	if maxLvl == 0 {
+		maxLvl = root.maxLvl
+	}
+	return root.New(maxLvl, ctx...)
+}
+
+func SetLevel(maxLvl Lvl) {
+	root.SetLevel(maxLvl)
 }
 
 // Root returns the root logger
@@ -96,4 +107,16 @@ func Crit(msg string, ctx ...interface{}) {
 func Critf(format string, args ...interface{}){
 	var emptyCtx []interface{}
 	root.write(fmt.Sprintf(format, args...), LvlCrit, emptyCtx)
+}
+
+// these two use Crit level, but also panics and exits the program
+func Panic(msg interface{}, ctx ...interface{}) {
+	root.write(fmt.Sprint(msg), LvlCrit, ctx)
+	panic(fmt.Sprint(msg))
+}
+
+func Panicf(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	root.write(fmt.Sprintf(format, args...), LvlCrit, emptyCtx)
+	panic(fmt.Sprintf(format, args...))
 }
