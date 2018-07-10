@@ -135,6 +135,12 @@ func (l *logger) Debug(msg string, ctx ...interface{}) {
 	l.write(msg, LvlDebug, ctx)
 }
 
+func (l *logger) Debugf(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	l.write(fmt.Sprintf(format, args...), LvlDebug, emptyCtx)
+}
+
+
 func (l *logger) Info(msg string, ctx ...interface{}) {
 	l.write(msg, LvlInfo, ctx)
 }

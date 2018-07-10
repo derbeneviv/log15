@@ -4,7 +4,8 @@ import (
 	"os"
 
 	"github.com/mattn/go-colorable"
-	isatty "github.com/mattn/go-isatty"
+	"github.com/mattn/go-isatty"
+	"fmt"
 )
 
 // Predefined handlers
@@ -45,6 +46,11 @@ func Root() Logger {
 // Debug is a convenient alias for Root().Debug
 func Debug(msg string, ctx ...interface{}) {
 	root.write(msg, LvlDebug, ctx)
+}
+
+func Debugf(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	root.write(fmt.Sprintf(format, args...), LvlDebug, emptyCtx)
 }
 
 // Info is a convenient alias for Root().Info
