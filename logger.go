@@ -93,9 +93,13 @@ type Logger interface {
 	Debug(msg string, ctx ...interface{})
 	Debugf(format string, args ...interface{})
 	Info(msg string, ctx ...interface{})
+	Infof(format string, args ...interface{})
 	Warn(msg string, ctx ...interface{})
+	Warnf(format string, args ...interface{})
 	Error(msg string, ctx ...interface{})
+	Errorf(format string, args ...interface{})
 	Crit(msg string, ctx ...interface{})
+	Critf(format string, args ...interface{})
 }
 
 type logger struct {
@@ -146,16 +150,36 @@ func (l *logger) Info(msg string, ctx ...interface{}) {
 	l.write(msg, LvlInfo, ctx)
 }
 
+func (l *logger) Infof(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	l.write(fmt.Sprintf(format, args...), LvlInfo, emptyCtx)
+}
+
 func (l *logger) Warn(msg string, ctx ...interface{}) {
 	l.write(msg, LvlWarn, ctx)
+}
+
+func (l *logger) Warnf(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	l.write(fmt.Sprintf(format, args...), LvlWarn, emptyCtx)
 }
 
 func (l *logger) Error(msg string, ctx ...interface{}) {
 	l.write(msg, LvlError, ctx)
 }
 
+func (l *logger) Errorf(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	l.write(fmt.Sprintf(format, args...), LvlError, emptyCtx)
+}
+
 func (l *logger) Crit(msg string, ctx ...interface{}) {
 	l.write(msg, LvlCrit, ctx)
+}
+
+func (l *logger) Critf(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	l.write(fmt.Sprintf(format, args...), LvlCrit, emptyCtx)
 }
 
 func (l *logger) GetHandler() Handler {

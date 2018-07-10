@@ -48,6 +48,7 @@ func Debug(msg string, ctx ...interface{}) {
 	root.write(msg, LvlDebug, ctx)
 }
 
+// mimics logrus.Debugf() behaivour
 func Debugf(format string, args ...interface{}){
 	var emptyCtx []interface{}
 	root.write(fmt.Sprintf(format, args...), LvlDebug, emptyCtx)
@@ -58,9 +59,21 @@ func Info(msg string, ctx ...interface{}) {
 	root.write(msg, LvlInfo, ctx)
 }
 
+// mimics logrus.Infof() behaivour
+func Infof(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	root.write(fmt.Sprintf(format, args...), LvlInfo, emptyCtx)
+}
+
 // Warn is a convenient alias for Root().Warn
 func Warn(msg string, ctx ...interface{}) {
 	root.write(msg, LvlWarn, ctx)
+}
+
+// mimics logrus.Warnf() behaivour
+func Warnf(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	root.write(fmt.Sprintf(format, args...), LvlWarn, emptyCtx)
 }
 
 // Error is a convenient alias for Root().Error
@@ -68,7 +81,19 @@ func Error(msg string, ctx ...interface{}) {
 	root.write(msg, LvlError, ctx)
 }
 
+// mimics logrus.Errorf() behaivour
+func Errorf(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	root.write(fmt.Sprintf(format, args...), LvlError, emptyCtx)
+}
+
 // Crit is a convenient alias for Root().Crit
 func Crit(msg string, ctx ...interface{}) {
 	root.write(msg, LvlCrit, ctx)
+}
+
+// mimics logrus.Critf() behaivour
+func Critf(format string, args ...interface{}){
+	var emptyCtx []interface{}
+	root.write(fmt.Sprintf(format, args...), LvlCrit, emptyCtx)
 }
