@@ -28,15 +28,15 @@ const (
 func (l Lvl) String() string {
 	switch l {
 	case LvlDebug:
-		return "dbug"
+		return "debug"
 	case LvlInfo:
 		return "info"
 	case LvlWarn:
 		return "warn"
 	case LvlError:
-		return "eror"
+		return "error"
 	case LvlCrit:
-		return "crit"
+		return "fatal"
 	default:
 		panic("bad level")
 	}
@@ -54,7 +54,7 @@ func LvlFromString(lvlString string) (Lvl, error) {
 		return LvlWarn, nil
 	case "error", "eror":
 		return LvlError, nil
-	case "crit":
+	case "crit", "fatal":
 		return LvlCrit, nil
 	default:
 		return LvlDebug, fmt.Errorf("Unknown level: %v", lvlString)
@@ -81,7 +81,7 @@ type RecordKeyNames struct {
 // A Logger writes key/value pairs to a Handler
 type Logger interface {
 	// New returns a new Logger that has this logger's context plus the given context
-	New(lvl Lvl, ctx ...interface{}) Logger
+	New(ctx ...interface{}) Logger
 
 	// GetHandler gets the handler associated with the logger.
 	GetHandler() Handler
@@ -115,26 +115,38 @@ type logger struct {
 
 func (l *logger) write(msg string, lvl Lvl, ctx []interface{}) {
 	if lvl <= l.maxLvl {
-		l.h.Log(&Record{
-			Time: time.Now(),
-			Lvl:  lvl,
-			Msg:  msg,
-			Ctx:  newContext(l.ctx, ctx),
-			Call: stack.Caller(2),
-			KeyNames: RecordKeyNames{
-				Time: timeKey,
-				Msg:  msgKey,
-				Lvl:  lvlKey,
-			},
-		})
+		if lvl <= LvlError {
+			l.h.Log(&Record{
+				Time: time.Now(),
+				Lvl:  lvl,
+				Msg:  msg,
+				Ctx:  newContext(l.ctx, ctx),
+				Call: stack.Caller(2),
+				KeyNames: RecordKeyNames{
+					Time: timeKey,
+					Msg:  msgKey,
+					Lvl:  lvlKey,
+				},
+			})
+		} else {
+			l.h.Log(&Record{
+				Time: time.Now(),
+				Lvl:  lvl,
+				Msg:  msg,
+				Ctx:  newContext(l.ctx, ctx),
+				Call: stack.Call{},
+				KeyNames: RecordKeyNames{
+					Time: timeKey,
+					Msg:  msgKey,
+					Lvl:  lvlKey,
+				},
+			})
+		}
 	}
 }
 
-func (l *logger) New(lvl Lvl, ctx ...interface{}) Logger {
-	if lvl == 0 {
-		lvl = l.maxLvl
-	}
-	child := &logger{lvl,newContext(l.ctx, ctx), new(swapHandler)}
+func (l *logger) New(ctx ...interface{}) Logger {
+	child := &logger{l.maxLvl,newContext(l.ctx, ctx), new(swapHandler)}
 	child.SetHandler(l.h)
 	return child
 }
@@ -196,16 +208,16 @@ func (l *logger) Critf(format string, args ...interface{}){
 // these two use Crit level, but also panics and exits the program
 func (l *logger) Panic(msg interface{}, ctx ...interface{}) {
 	l.write(fmt.Sprint(msg), LvlCrit, ctx)
-	// wait for 10 ms to smoothen the output
-	time.Sleep(10 )
+	// wait for 1 s to smoothen the output
+	time.Sleep(1 * time.Second)
 	panic(fmt.Sprint(msg))
 }
 
 func (l *logger) Panicf(format string, args ...interface{}){
 	var emptyCtx []interface{}
 	l.write(fmt.Sprintf(format, args...), LvlCrit, emptyCtx)
-	// wait for 10 ms to smoothen the output
-	time.Sleep(10)
+	// wait for 1 s to smoothen the output
+	time.Sleep(1 * time.Second)
 	panic(fmt.Sprintf(format, args...))
 }
 

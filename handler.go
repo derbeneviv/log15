@@ -95,9 +95,12 @@ func (h *closingHandler) Close() error {
 
 // CallerFileHandler returns a Handler that adds the line number and file of
 // the calling function to the context with key "caller".
+// Works only for error and critical logs
 func CallerFileHandler(h Handler) Handler {
 	return FuncHandler(func(r *Record) error {
-		r.Ctx = append(r.Ctx, "caller", fmt.Sprint(r.Call))
+		if r.Lvl <= LvlError {
+			r.Ctx = append(r.Ctx, "caller", fmt.Sprint(r.Call))
+		}
 		return h.Log(r)
 	})
 }

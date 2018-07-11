@@ -31,14 +31,15 @@ func init() {
 // New returns a new logger with the given context.
 // New is a convenient alias for Root().New
 func New(ctx ...interface{}) Logger {
-	return root.New(root.maxLvl, ctx...)
+	l := root.New(ctx...)
+	l.SetLevel(root.maxLvl)
+	return l
 }
 
 func NewWithLvl(maxLvl Lvl, ctx ...interface{}) Logger {
-	if maxLvl == 0 {
-		maxLvl = root.maxLvl
-	}
-	return root.New(maxLvl, ctx...)
+	l := root.New(ctx...)
+	l.SetLevel(maxLvl)
+	return l
 }
 
 func SetLevel(maxLvl Lvl) {
